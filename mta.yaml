@@ -1,0 +1,78 @@
+_schema-version: "3.2"
+ID: AldoTutorial.AldoProject
+version: 0.0.1
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm install
+        - npm run build:workspaces
+modules:
+  - name: AldoTutorial.AldoProject-destination-content
+    type: com.sap.application.content
+    requires:
+      - name: AldoTutorial.AldoProject-auth
+      - name: AldoTutorial.AldoProject-html-repo-host
+      - name: AldoTutorial.AldoProject-destination-service
+        parameters:
+          content-target: true
+    parameters:
+      content:
+        instance:
+          existing_destinations_policy: update
+          destinations:
+            - Name: AldoTutorial.AldoProject-html-repo-host
+              ServiceInstanceName: AldoTutorial.AldoProject-html-repo-host
+              ServiceKeyName: AldoTutorial.AldoProject-html-repo-host-key
+              sap.cloud.service: basic.service
+            - Name: AldoTutorial.AldoProject-auth
+              ServiceInstanceName: AldoTutorial.AldoProject-auth
+              ServiceKeyName: AldoTutorial.AldoProject-auth-key
+              sap.cloud.service: basic.service
+              Authentication: OAuth2UserTokenExchange
+    build-parameters:
+      no-source: true
+  - name: AldoTutorial.AldoProject-ui-deployer
+    type: com.sap.application.content
+    path: .
+    requires:
+      - name: AldoTutorial.AldoProject-html-repo-host
+        parameters:
+          content-target: true
+    build-parameters:
+      build-result: resources
+      requires:
+        - artifacts:
+            - dist/aldoapp-content.zip
+          name: aldoapp
+          target-path: resources/
+  - name: aldoapp
+    type: html5
+    path: aldoapp
+    build-parameters:
+      supported-platforms: []
+resources:
+  - name: AldoTutorial.AldoProject-destination-service
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-name: AldoTutorial.AldoProject-destination-service
+      service-plan: lite
+      config:
+        HTML5Runtime_enabled: true
+        version: 0.0.1
+  - name: AldoTutorial.AldoProject-html-repo-host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-host
+      service-keys:
+        - name: AldoTutorial.AldoProject-html-repo-host-key
+  - name: AldoTutorial.AldoProject-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      path: ./xs-security.json
+      service: xsuaa
+      service-plan: application
+      service-keys:
+        - name: AldoTutorial.AldoProject-auth-key

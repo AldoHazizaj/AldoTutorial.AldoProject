@@ -1,0 +1,14 @@
+{
+  "generator-ui5-project": {
+    "namespaceUI5": "AldoTutorial",
+    "projectName": "AldoProject",
+    "uimoduleName": "aldoapp",
+    "enableFPM": false,
+    "platform": "SAP Build Work Zone, standard edition",
+    "tileName": "Aldo Application",
+    "ui5Libs": "Local resources (SAPUI5)",
+    "newDir": true,
+    "initRepo": true,
+    "projectId": "AldoTutorial.AldoProject"
+  }
+}
